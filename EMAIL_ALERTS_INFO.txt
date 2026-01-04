@@ -1,0 +1,228 @@
+📧 SYSTÈME D'ALERTE PAR EMAIL - INFORMATIONS
+==============================================
+
+✨ NOUVELLE FONCTIONNALITÉ AJOUTÉE!
+
+Chaque incident détecté envoie maintenant un email d'alerte à:
+📧 nouhaila.touil.23@ump.ac.ma
+
+==============================================
+📚 DOCUMENTATION FOURNIE:
+==============================================
+
+1. 🚀 QUICK_EMAIL_SETUP.txt (COMMENCER ICI!)
+   ├─ Configuration rapide en 4 étapes
+   ├─ Idéal pour une mise en place rapide
+   └─ Temps: 5-10 minutes
+
+2. 📖 EMAIL_SETUP_GUIDE.md
+   ├─ Guide complet en Français
+   ├─ Instructions détaillées
+   ├─ Dépannage approfondi
+   └─ Exemples de configuration
+
+3. 📋 EMAIL_CONFIG.txt
+   ├─ Aide rapide sur SMTP
+   ├─ Configurations prédéfinies
+   └─ Format de paramètres
+
+4. ✅ EMAIL_CHECKLIST.txt
+   ├─ Checklist complète
+   ├─ Tests à effectuer
+   └─ Points de vérification
+
+5. 📊 EMAIL_IMPLEMENTATION_SUMMARY.txt
+   ├─ Résumé des changements
+   ├─ Fichiers modifiés
+   └─ Fichiers créés
+
+==============================================
+🛠️ OUTILS FOURNIS:
+==============================================
+
+1. configure_email.py
+   $ python configure_email.py
+   - Configuration interactive
+   - Génère le code automatiquement
+
+2. test_email_config.py
+   $ python manage.py shell < test_email_config.py
+   - Teste la configuration SMTP
+   - Envoie un email de test
+
+==============================================
+⚡ MISE EN PLACE RAPIDE:
+==============================================
+
+OPTION 1 - Configuration interactive (RECOMMANDÉE):
+
+$ python configure_email.py
+
+Suivez les questions et copiez le code généré dans 
+projet/settings.py
+
+OPTION 2 - Configuration manuelle:
+
+Voir: QUICK_EMAIL_SETUP.txt
+(4 étapes simples)
+
+OPTION 3 - Configuration détaillée:
+
+Voir: EMAIL_SETUP_GUIDE.md
+(guide complet)
+
+==============================================
+✅ TEST IMMÉDIAT:
+==============================================
+
+Après configuration:
+
+$ python manage.py shell < test_email_config.py
+
+Attendu:
+✅ Email envoyé avec succès à nouhaila.touil.23@ump.ac.ma!
+
+==============================================
+📧 CONTENU DES EMAILS:
+==============================================
+
+Format:
+┌──────────────────────────────────────┐
+│ 🚨 ALERTE INCIDENT #42 - Niveau 1/7 │
+├──────────────────────────────────────┤
+│ ID Incident: #42                     │
+│ Niveau: 1/7                          │
+│ Statut: Ouvert                       │
+│ Date/Heure: 04/01/2025 14:30:45     │
+│                                      │
+│ Opérateurs à alerter:                │
+│ - Opérateur 1                        │
+│                                      │
+│ Données des capteurs:                │
+│ - Température max: 9.2°C             │
+│ - Température min: 9.2°C             │
+│ - Humidité max: 65%                  │
+│ - Humidité min: 65%                  │
+│                                      │
+│ Action requise:                      │
+│ Veuillez consulter le tableau...     │
+└──────────────────────────────────────┘
+
+==============================================
+🔄 CYCLE D'ALERTE:
+==============================================
+
+1. Température anormale détectée
+   → Email d'alerte créé (Niveau 1)
+   → Opérateur 1 alerté
+
+2. Température reste anormale
+   → Email d'escalade (Niveau 2)
+   → Opérateur 1 alerté
+
+3. Température reste anormale + persistance
+   → Email d'escalade (Niveau 3)
+   → Opérateur 1 alerté
+
+4. Escalade aux niveaux 4-6
+   → Opérateur 2 ajouté
+   → Email d'escalade envoyé
+
+5. Escalade au niveau 7+
+   → Opérateur 3 ajouté
+   → Email d'escalade envoyé
+
+6. Température revient à la normale
+   → Incident fermé (pas d'email)
+   → Prêt pour le prochain incident
+
+==============================================
+⚙️ CONFIGURATION REQUISE:
+==============================================
+
+Dans projet/settings.py:
+
+EMAIL_HOST_USER = 'votre-email@service.com'
+EMAIL_HOST_PASSWORD = 'mot-de-passe-app'
+DEFAULT_FROM_EMAIL = 'votre-email@service.com'
+ALERT_EMAIL = 'nouhaila.touil.23@ump.ac.ma'
+
+Les 3 autres paramètres sont prédéfinis pour Gmail.
+
+==============================================
+🔐 SÉCURITÉ:
+==============================================
+
+✓ Utilisez TOUJOURS un mot de passe d'application
+  (pas votre vrai mot de passe!)
+
+✓ Pour Gmail:
+  - Activez l'authentification 2FA
+  - Générez un mot de passe d'application
+  - Utilisez ce mot de passe en configuration
+
+✓ Ne partagez JAMAIS:
+  - EMAIL_HOST_PASSWORD
+  - EMAIL_HOST_USER
+  - En clair sur un dépôt public
+
+==============================================
+❓ QUESTIONS FRÉQUENTES:
+==============================================
+
+Q: Où trouver l'aide?
+R: EMAIL_SETUP_GUIDE.md
+
+Q: Comment configurer rapidement?
+R: QUICK_EMAIL_SETUP.txt (5 min) ou configure_email.py
+
+Q: Quel email utiliser?
+R: Gmail recommandé (gratuit, facile, fiable)
+
+Q: Et si l'email échoue?
+R: L'incident continue, un log d'erreur est affiché
+
+Q: Puis-je changer l'email destinataire?
+R: Oui, modifiez ALERT_EMAIL dans settings.py
+
+Q: Comment tester?
+R: python manage.py shell < test_email_config.py
+
+Q: Où voir les erreurs?
+R: Dans la console Django
+
+Q: L'email s'envoie à chaque lecture DHT?
+R: Non, seulement à la création d'incident et escalade
+
+==============================================
+📊 FICHIERS MODIFIÉS:
+==============================================
+
+projet/settings.py
+  ✓ Configuration SMTP ajoutée
+  ✓ Email destinataire défini
+
+DHT/signals.py
+  ✓ Fonction d'envoi d'email ajoutée
+  ✓ Intégration avec incidents
+  ✓ Escalade avec email
+
+==============================================
+🎯 PROCHAINES ÉTAPES:
+==============================================
+
+1. Lire QUICK_EMAIL_SETUP.txt (5 min)
+2. Configurer vos identifiants email
+3. Exécuter: python manage.py shell < test_email_config.py
+4. Redémarrer Django
+5. Tester en créant un incident
+
+==============================================
+✨ C'EST PRÊT!
+==============================================
+
+Le système d'alerte par email est complètement intégré.
+Configurez simplement vos identifiants et vous recevrez
+les alertes automatiquement!
+
+Questions? Consultez: EMAIL_SETUP_GUIDE.md

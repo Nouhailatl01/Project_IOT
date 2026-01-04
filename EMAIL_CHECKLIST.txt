@@ -1,0 +1,169 @@
+✅ CHECKLIST - SYSTÈME D'ALERTE EMAIL
+=====================================
+
+PRÉ-REQUIS:
+  □ Django 4.2+ installé
+  □ Accès à un serveur SMTP (Gmail recommandé)
+  □ Accès au fichier projet/settings.py
+  □ Accès au dossier DHT/
+
+CONFIGURATION:
+  □ Email expéditeur obtenu (Gmail, Outlook, etc.)
+  □ Mot de passe d'application généré
+  □ Accès à nouhaila.touil.23@ump.ac.ma confirmé
+
+IMPLÉMENTATION - FICHIERS MODIFIÉS:
+  ✓ projet/settings.py
+    □ Chercher: EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    □ Vérifier: EMAIL_HOST = 'smtp.gmail.com'
+    □ Vérifier: EMAIL_PORT = 587
+    □ Vérifier: EMAIL_USE_TLS = True
+    □ IMPORTANT: EMAIL_HOST_USER = 'VOTRE-EMAIL'
+    □ IMPORTANT: EMAIL_HOST_PASSWORD = 'VOTRE-MOT-DE-PASSE'
+    □ Vérifier: DEFAULT_FROM_EMAIL = 'VOTRE-EMAIL'
+    □ Vérifier: ALERT_EMAIL = 'nouhaila.touil.23@ump.ac.ma'
+
+  ✓ DHT/signals.py
+    □ Chercher: from django.core.mail import send_mail
+    □ Chercher: from django.conf import settings
+    □ Chercher: def send_incident_alert_email(incident):
+    □ Chercher: send_incident_alert_email(incident) [création]
+    □ Chercher: send_incident_alert_email(incident) [escalade]
+
+FICHIERS CRÉÉS (RÉFÉRENCE):
+  ✓ EMAIL_CONFIG.txt - Guide rapide SMTP
+  ✓ EMAIL_SETUP_GUIDE.md - Guide complet avec dépannage
+  ✓ configure_email.py - Assistant de configuration
+  ✓ test_email_config.py - Script de test SMTP
+  ✓ EMAIL_IMPLEMENTATION_SUMMARY.txt - Résumé de l'implémentation
+
+TESTS À EFFECTUER:
+
+  Test 1: Syntaxe Python
+  $ python -m py_compile projet/settings.py
+  $ python -m py_compile DHT/signals.py
+  Expected: Pas d'erreur
+
+  Test 2: Configuration SMTP (APRÈS avoir configuré)
+  $ python manage.py shell < test_email_config.py
+  Expected: ✅ Email envoyé avec succès...
+
+  Test 3: Créer un incident via API
+  $ curl -X POST http://localhost:8000/api/post \
+    -H "Content-Type: application/json" \
+    -d '{"temp": 0.5, "hum": 50}'
+  Check: Email reçu à nouhaila.touil.23@ump.ac.ma
+
+  Test 4: Vérifier l'escalade
+  $ curl -X POST http://localhost:8000/api/post \
+    -H "Content-Type: application/json" \
+    -d '{"temp": 1.0, "hum": 50}'
+  Check: 2ème email reçu (escalade niveau 2)
+
+POINTS À VÉRIFIER AVANT PRODUCTION:
+
+  Sécurité:
+  □ EMAIL_HOST_PASSWORD ≠ mot de passe Gmail réel
+  □ Utiliser mot de passe d'application à la place
+  □ Ne pas commiter EMAIL_HOST_PASSWORD en clair en git
+  
+  Configuration:
+  □ EMAIL_HOST_USER est configuré
+  □ EMAIL_HOST_PASSWORD est configuré
+  □ DEFAULT_FROM_EMAIL est valide
+  □ ALERT_EMAIL est correcte
+  
+  Fonctionnement:
+  □ Test SMTP réussi
+  □ Email test reçu sans problème
+  □ Incident crée un email
+  □ Escalade crée un email
+  
+  Logs:
+  □ Vérifier que les logs montrent "Email d'alerte envoyé"
+  □ Pas d'erreurs SMTPAuthenticationError
+  □ Pas d'erreurs SMTPServerDisconnected
+
+CONFIGURATION RECOMMANDÉE - GMAIL:
+
+1. Aller sur https://myaccount.google.com
+2. Sécurité → Authentification 2FA (activer)
+3. Sécurité → Mots de passe d'application
+4. Sélectionner: Mail + Windows
+5. Copier le mot de passe généré
+6. Dans settings.py:
+   EMAIL_HOST_USER = 'votre-email@gmail.com'
+   EMAIL_HOST_PASSWORD = 'mot-de-passe-généré'
+7. Test: python manage.py shell < test_email_config.py
+
+CONFIGURATION RECOMMANDÉE - OUTLOOK:
+
+1. Aller sur https://account.microsoft.com
+2. Sécurité → Paramètres de sécurité avancés
+3. Vérifier l'authentification
+4. Dans settings.py:
+   EMAIL_HOST = 'smtp.office365.com'
+   EMAIL_HOST_USER = 'votre-email@outlook.com'
+   EMAIL_HOST_PASSWORD = 'votre-mot-de-passe'
+5. Test: python manage.py shell < test_email_config.py
+
+TROUBLESHOOTING RAPIDE:
+
+Erreur: "Email SMTP non configuré"
+→ Vérifier que EMAIL_HOST_USER est rempli dans settings.py
+
+Erreur: SMTPAuthenticationError
+→ Vérifier le mot de passe, utiliser mot de passe d'application Gmail
+
+Erreur: SMTPServerDisconnected
+→ Vérifier la connexion Internet, les paramètres SMTP
+
+L'incident n'est pas créé
+→ Vérifier les logs Django
+→ Vérifier que la température est hors limites (< 2 ou > 8)
+
+Email non reçu
+→ Vérifier le dossier Spam/Junk
+→ Vérifier ALERT_EMAIL = 'nouhaila.touil.23@ump.ac.ma'
+→ Tester: python manage.py shell < test_email_config.py
+
+=====================================
+DOCUMENTATION DISPONIBLE:
+=====================================
+
+EMAIL_SETUP_GUIDE.md
+  - Guide complet en Français
+  - Étapes détaillées
+  - Exemples de configuration
+  - Dépannage approfondi
+
+EMAIL_CONFIG.txt
+  - Aide rapide
+  - Configurations SMTP
+  - Format et structure
+
+configure_email.py
+  - Configuration interactive
+  - Génère automatiquement le code
+
+test_email_config.py
+  - Valide la configuration
+  - Envoie un email de test
+
+=====================================
+APRÈS CONFIGURATION:
+=====================================
+
+✓ Chaque incident nouveau → Email
+✓ Chaque escalade → Email
+✓ Incident résolu → aucun email (par design)
+✓ Incident fermé (température normale) → aucun email
+
+Tous les emails incluent:
+- ID incident et niveau
+- Opérateurs alertés
+- Données des capteurs
+- Timestamp
+- Lien implicite au tableau de bord
+
+=====================================

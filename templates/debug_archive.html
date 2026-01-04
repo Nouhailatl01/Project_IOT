@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Archive</title>
+</head>
+<body>
+    <h1>Debug Incidents Data</h1>
+    <pre id="output">Chargement...</pre>
+    
+    <script>
+        fetch('/incident/archive/')
+            .then(r => r.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const dataElement = doc.getElementById('incidentsData');
+                
+                if (!dataElement) {
+                    document.getElementById('output').textContent = 'Element incidentsData non trouvé';
+                } else {
+                    const data = dataElement.textContent;
+                    document.getElementById('output').textContent = 'Nombre de caractères: ' + data.length + '\n\nData:\n' + data.substring(0, 1000);
+                }
+            })
+            .catch(e => document.getElementById('output').textContent = 'Erreur: ' + e);
+    </script>
+</body>
+</html>

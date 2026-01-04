@@ -1,0 +1,54 @@
+=====================================
+CONFIGURATION EMAIL - À REMPLIR
+=====================================
+
+Vous devez configurer les informations d'email dans settings.py
+
+Options disponibles:
+
+1. GMAIL avec mot de passe d'application:
+   - EMAIL_HOST = 'smtp.gmail.com'
+   - EMAIL_PORT = 587
+   - EMAIL_USE_TLS = True
+   - EMAIL_HOST_USER = 'votre-email@gmail.com'
+   - EMAIL_HOST_PASSWORD = 'votre-mot-de-passe-application' (pas votre mot de passe Gmail)
+   
+   Pour obtenir le mot de passe d'application:
+   a) Allez sur https://myaccount.google.com/security
+   b) Activez l'authentification 2FA si nécessaire
+   c) Allez à "Mots de passe d'application"
+   d) Sélectionnez "Mail" et "Windows"
+   e) Copiez le mot de passe généré
+
+2. OUTLOOK:
+   - EMAIL_HOST = 'smtp.office365.com'
+   - EMAIL_PORT = 587
+   - EMAIL_USE_TLS = True
+   - EMAIL_HOST_USER = 'votre-email@outlook.com'
+   - EMAIL_HOST_PASSWORD = 'votre-mot-de-passe'
+
+3. AUTRE SERVICE SMTP:
+   - Voir la documentation du service
+   - Remplir les paramètres correspondants
+
+=====================================
+FICHIER À MODIFIER: projet/settings.py
+=====================================
+
+Cherchez les lignes:
+  EMAIL_HOST_USER = 'your-email@gmail.com'
+  EMAIL_HOST_PASSWORD = 'your-app-password'
+  DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+
+Et remplacez-les avec vos vraies informations.
+
+=====================================
+EMAIL DESTINATAIRE DES ALERTES
+=====================================
+
+Email configuré: nouhaila.touil.23@ump.ac.ma
+
+Pour changer cet email, modifiez dans settings.py:
+  ALERT_EMAIL = 'nouveau-email@domaine.com'
+
+=====================================

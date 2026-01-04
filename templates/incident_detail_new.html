@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détails Incident</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 { font-size: 28px; }
+        
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card .value { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .stat-card .label { font-size: 12px; opacity: 0.9; }
+        
+        .operator-panels {
+            margin-top: 30px;
+        }
+        
+        .operator-panel {
+            border-left: 5px solid;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .operator-panel.op1 { border-left-color: #667eea; }
+        .operator-panel.op2 { border-left-color: #FF9800; }
+        .operator-panel.op3 { border-left-color: #f44336; }
+        
+        .operator-panel h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .panel-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-item label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .info-item .value {
+            font-size: 14px;
+            color: #333;
+            word-break: break-word;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-ack {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-lost {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="incidentTitle">Incident #--</h1>
+            <a href="/incident/archive/" class="back-btn">← Archive</a>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="label">État</div>
+                    <div class="value" id="statusBadge">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Début</div>
+                    <div class="value" id="startDate" style="font-size: 14px;">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Fin</div>
+                    <div class="value" id="endDate" style="font-size: 14px;">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Durée</div>
+                    <div class="value" id="duration" style="font-size: 14px;">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Alertes</div>
+                    <div class="value" id="counter">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Temp. Max</div>
+                    <div class="value" id="maxTemp">--</div>
+                </div>
+            </div>
+            
+            <div id="productLostAlert" style="display: none; background: #f8d7da; border: 2px solid #f44336; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>⚠️ ALERTE CRITIQUE</strong><br/>
+                Aucun opérateur n'a agi après 10 heures. <strong>Produit perdu !</strong>
+            </div>
+            
+            <div class="operator-panels" id="operatorPanels"></div>
+        </div>
+    </div>
+
+    <script>
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            return date.toLocaleString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        function formatDuration(start, end) {
+            if (!start || !end) return '--';
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diff = endDate - startDate;
+            
+            const totalSeconds = Math.floor(diff / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+        
+        function loadIncident() {
+            const incident = JSON.parse(document.getElementById('incidentData').textContent);
+            
+            // Remplir les infos principales
+            document.getElementById('incidentTitle').textContent = `Incident #${incident.id}`;
+            document.getElementById('startDate').textContent = formatDateTime(incident.start_at);
+            document.getElementById('endDate').textContent = formatDateTime(incident.end_at);
+            document.getElementById('duration').textContent = formatDuration(incident.start_at, incident.end_at);
+            document.getElementById('counter').textContent = incident.counter;
+            document.getElementById('maxTemp').textContent = incident.max_temp.toFixed(1) + '°C';
+            
+            // Afficher alerte produit perdu
+            if (incident.is_product_lost) {
+                document.getElementById('productLostAlert').style.display = 'block';
+            }
+            
+            // Créer les panneaux opérateurs
+            const panelsHtml = [
+                {level: 1, name: 'Opérateur 1', responded: incident.op1_responded, comment: incident.op1_comment, time: incident.op1_responded_at, color: 'op1'},
+                {level: 2, name: 'Opérateur 2', responded: incident.op2_responded, comment: incident.op2_comment, time: incident.op2_responded_at, color: 'op2'},
+                {level: 3, name: 'Opérateur 3', responded: incident.op3_responded, comment: incident.op3_comment, time: incident.op3_responded_at, color: 'op3'}
+            ].map(op => `
+                <div class="operator-panel ${op.color}">
+                    <h3>${op.name}</h3>
+                    <div class="panel-content">
+                        <div class="info-item">
+                            <label>Statut</label>
+                            <div class="value">
+                                ${op.responded ? '<span class="badge badge-ack">✅ A réagi</span>' : '<span class="badge badge-pending">⏳ En attente</span>'}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <label>Timestamp</label>
+                            <div class="value">${formatDateTime(op.time)}</div>
+                        </div>
+                        <div class="info-item">
+                            <label>Commentaire</label>
+                            <div class="value">${op.comment ? '<em>' + op.comment + '</em>' : 'Aucun'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('operatorPanels').innerHTML = panelsHtml;
+        }
+        
+        loadIncident();
+    </script>
+    
+    <script type="application/json" id="incidentData">
+        {{ incident|safe }}
+    </script>
+</body>
+</html>

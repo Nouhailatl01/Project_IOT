@@ -1,0 +1,255 @@
+⚡ QUICK START - DÉMARRAGE RAPIDE EN 5 MINUTES
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1️⃣  VÉRIFIER QUE LE SERVEUR TOURNE
+
+  Le serveur Django doit être actif sur http://127.0.0.1:8000/
+  
+  ✓ Si le serveur est en cours d'exécution, vous verrez:
+    "Starting development server at http://127.0.0.1:8000/"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2️⃣  ACCÉDER À LA PAGE DE CONNEXION
+
+  URL: http://localhost:8000/login/
+  
+  Vous devriez voir:
+  ├─ Titre: "🔐 Connexion"
+  ├─ Champ "Nom d'utilisateur"
+  ├─ Champ "Mot de passe"
+  └─ Bouton "Se connecter"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3️⃣  SE CONNECTER AVEC UN COMPTE DE TEST
+
+  Utilisateur: op1
+  Mot de passe: password
+  
+  Puis cliquez "Se connecter"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4️⃣  DÉCOUVRIR LE DASHBOARD
+
+  Vous êtes maintenant sur: /dashboard/
+  
+  Vous voyez 4 sections principales:
+
+  📈 MESURES EN TEMPS RÉEL
+    ├─ Température actuelle (°C)
+    ├─ Humidité actuelle (%)
+    └─ Timestamp ("il y a X secondes")
+
+  ⚠️ GESTION DES INCIDENTS
+    ├─ Statut: "Pas d'incident" (vert) ou "Incident en cours" (rouge)
+    ├─ Erreur détectée: température max
+    ├─ Date début: quand l'incident a commencé
+    └─ Compteur d'incidents: nombre de mesures critiques
+
+  👥 INTERVENTIONS OPÉRATEURS (sections dynamiques)
+    ├─ Opérateur 1 (toujours visible si compteur >= 1)
+    ├─ Opérateur 2 (visible si compteur >= 4)
+    └─ Opérateur 3 (visible si compteur >= 7)
+
+  🔌 TESTER L'API
+    ├─ Température (°C)
+    ├─ Humidité (%)
+    └─ Bouton "Envoyer vers /api/post"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5️⃣  CRÉER UN INCIDENT DE TEST
+
+  Panel "🔌 Tester l'API":
+  
+  a) Entrez une température CRITIQUE (entre 2 et 8°C):
+     Température: 5.5
+  
+  b) Entrez une humidité:
+     Humidité: 65.0
+  
+  c) Cliquez "Envoyer vers /api/post"
+  
+  d) Vous verrez la réponse JSON:
+     {"id": 42, "temp": 5.5, "hum": 65.0, "dt": "..."}
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6️⃣  OBSERVER L'INCIDENT AUTOMATIQUEMENT
+
+  Dans la section "⚠️ Gestion des Incidents":
+  
+  Avant:
+    Statut: "Pas d'incident" ✓
+    Compteur: 0
+  
+  Après votre envoi:
+    Statut: "Incident en cours" ⚠️
+    Erreur détectée: "5.5 °C"
+    Compteur d'incidents: 1
+  
+  Et un panel "Opérateur 1" apparaît!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7️⃣  INTERVENIR EN TANT QU'OPÉRATEUR
+
+  Panel "Opérateur 1":
+  
+  a) Cochez "Accusé de réception"
+     ✓ Confirme que vous avez lu l'incident
+  
+  b) Ajoutez un commentaire (optionnel):
+     "Ventilation mise en marche"
+  
+  c) Cliquez "Valider Opérateur 1"
+  
+  d) Vous verrez maintenant:
+     ├─ "Dernière validation: 31/12/2025 14:45:30"
+     ├─ "Accusé: ✓ Oui"
+     └─ "Commentaire: Ventilation mise en marche"
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8️⃣  DÉCLENCHER L'ESCALADE (BONUS)
+
+  Envoyez plusieurs mesures avec temp = 4.5°C:
+  
+  Mesure 1: Compteur = 1 → Opérateur 1 visible
+  Mesure 2: Compteur = 2 → Opérateur 1 visible
+  Mesure 3: Compteur = 3 → Opérateur 1 visible
+  Mesure 4: Compteur = 4 → Opérateurs 1 + 2 visibles ⬅️ ESCALADE!
+  Mesure 5: Compteur = 5 → Opérateurs 1 + 2 visibles
+  Mesure 6: Compteur = 6 → Opérateurs 1 + 2 visibles
+  Mesure 7: Compteur = 7 → Opérateurs 1 + 2 + 3 visibles ⬅️ ESCALADE COMPLÈTE!
+
+═══════════════════════════════════════════════════════════════════════════════
+
+9️⃣  FERMER L'INCIDENT
+
+  Envoyez une mesure avec température HORS de [2-8]:
+  
+  Par exemple:
+    Température: 15.0 (> 8)
+    Humidité: 50.0
+  
+  Résultat:
+    ├─ Statut: "Pas d'incident" ✓
+    ├─ Compteur: 0
+    └─ Panels opérateurs: DISPARUS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔟 SE DÉCONNECTER
+
+  Bouton "Déconnexion" en haut à droite
+  
+  Vous êtes redirigé vers: /login/
+
+═══════════════════════════════════════════════════════════════════════════════
+
+💡 EXEMPLES RAPIDES
+
+CRÉER UN INCIDENT:
+  Température: 3.0, Humidité: 60.0 → INCIDENT ⚠️
+
+INCIDENT NORMAL:
+  Température: 25.0, Humidité: 50.0 → OK ✓
+
+FERMER UN INCIDENT:
+  Température: 10.0, Humidité: 55.0 → INCIDENT FERMÉ
+
+ESCALADE OP1 → OP2:
+  Envoyer 4x temp=5.0 → Opérateurs 1+2 visibles
+
+ESCALADE OP2 → OP3:
+  Envoyer 7x temp=5.0 → Opérateurs 1+2+3 visibles
+
+═══════════════════════════════════════════════════════════════════════════════
+
+⚙️ CONTRÔLES CLAVIER
+
+Raccourcis navigateur:
+  F5          → Rafraîchir la page
+  Ctrl+Shift+I → Ouvrir DevTools (voir les erreurs)
+  Ctrl+C      → Dans le terminal, arrêter le serveur
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 PLAGE DE TEMPÉRATURE CRITIQUE
+
+IMPORTANT: Incident créé si TEMPÉRATURE ENTRE 2°C ET 8°C (inclus)
+
+  < 2°C   ✓ OK (pas d'incident)
+  2°C     🔴 INCIDENT
+  3°C     🔴 INCIDENT
+  4°C     🔴 INCIDENT
+  5°C     🔴 INCIDENT
+  6°C     🔴 INCIDENT
+  7°C     🔴 INCIDENT
+  8°C     🔴 INCIDENT
+  > 8°C   ✓ OK (pas d'incident)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🆘 DÉPANNAGE RAPIDE
+
+Problème: "Page blanche" ou "Connection refused"
+Solution: Vérifier que le serveur tourne
+  → Regarder dans le terminal
+  → Lancer: python manage.py runserver
+
+Problème: "Vous n'avez pas accès à ce système"
+Solution: L'utilisateur n'est pas un opérateur valide
+  → Vérifier la BD: python manage.py shell
+  → Créer l'opérateur avec create_operators.py
+
+Problème: Incident ne se crée pas
+Solution: Température hors plage [2-8]
+  → Essayer: Température = 5.0 (bien dans la plage)
+
+Problème: Les opérateurs 2 et 3 n'apparaissent pas
+Solution: Compteur d'incidents trop bas
+  → Envoyer 4x mesures pour Op2
+  → Envoyer 7x mesures pour Op3
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION SUPPLÉMENTAIRE
+
+Pour plus de détails:
+  README.md               → Guide complet
+  GUIDE_OPERATEURS.md    → Guide opérateurs
+  FAQ.txt                → Questions fréquentes
+  EXAMPLES_CURL.sh       → Commandes API
+  test_api.py            → Tests API
+  PROJECT_STRUCTURE.txt  → Structure du projet
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎯 PROCHAINES ÉTAPES
+
+Après ce Quick Start, vous pouvez:
+
+1. Tester les graphes:
+   /graph_temp/ et /graph_hum/
+
+2. Consulter l'archive:
+   /incident/archive/
+
+3. Tester l'API avec d'autres opérateurs:
+   Déconnexion → Connexion avec op2 ou op3
+
+4. Lire la documentation complète:
+   README.md et GUIDE_OPERATEURS.md
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ VOUS ÊTES PRÊT!
+
+Cliquez sur "Se connecter" et commencez!
+
+═══════════════════════════════════════════════════════════════════════════════

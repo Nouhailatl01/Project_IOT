@@ -1,0 +1,284 @@
+❓ FAQ - DASHBOARD OPÉRATEURS DHT11
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📌 AUTHENTIFICATION & ACCÈS
+
+Q1: Comment se connecter?
+R: Allez à http://localhost:8000/login/
+   Utilisez les identifiants fournis (op1/password, op2/password, op3/password)
+
+Q2: Qu'est-ce qu'un "Opérateur"?
+R: C'est un rôle défini dans le système. Chaque opérateur a un niveau (1, 2 ou 3)
+   et peut intervenir sur les incidents selon son niveau.
+
+Q3: Je peux créer un nouvel opérateur?
+R: Oui, via l'admin Django (http://localhost:8000/admin/)
+   Ou en Python:
+   >>> from django.contrib.auth.models import User
+   >>> from DHT.models import Operateur
+   >>> user = User.objects.create_user('op4', password='pwd')
+   >>> Operateur.objects.create(user=user, level=1, is_active=True)
+
+Q4: Puis-je réinitialiser mon mot de passe?
+R: Via l'admin Django seulement. Contactez l'administrateur système.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 INCIDENTS & MESURES
+
+Q5: Comment fonctionne la détection d'incident?
+R: Quand la température est ENTRE 2°C et 8°C (inclus), un incident est créé.
+   La détection se fait automatiquement à chaque mesure reçue.
+
+Q6: Un incident se crée plusieurs fois?
+R: Non. S'il existe déjà un incident ouvert, le compteur augmente simplement.
+   Un seul incident ouvert à la fois.
+
+Q7: Quand un incident se ferme-t-il?
+R: Quand la température sort de la plage [2-8], c'est-à-dire:
+   - Si temp < 2 °C, OU
+   - Si temp > 8 °C
+
+Q8: Que signifie "Compteur d'incidents"?
+R: C'est le nombre de mesures successives dans la plage critique [2-8].
+   Utilisé pour déclencher l'escalade des opérateurs.
+
+Q9: Les incidents sont-ils sauvegardés?
+R: Oui! Consultez l'archive: http://localhost:8000/incident/archive/
+
+═══════════════════════════════════════════════════════════════════════════════
+
+👥 ESCALADE DES OPÉRATEURS
+
+Q10: Comment fonctionne l'escalade?
+R: Progression automatique du nombre d'opérateurs impliqués:
+    1-3 incidents  → Opérateur 1 visible
+    4-6 incidents  → Opérateurs 1 + 2 visibles
+    7+ incidents   → Opérateurs 1 + 2 + 3 visibles
+
+Q11: Que doit faire chaque opérateur?
+R: Pour chaque incident:
+    1. Cocher "Accusé de réception" (confirmer la lecture)
+    2. Ajouter optionnellement un commentaire
+    3. Cliquer "Valider Opérateur X"
+
+Q12: Qui intervient en premier?
+R: Toujours l'Opérateur 1. Ensuite l'Op2 et Op3 selon le compteur.
+
+Q13: Un opérateur peut-il intervenir plusieurs fois?
+R: Oui! Il peut modifier son ACK et commentaire, puis cliquer "Valider" à nouveau.
+
+Q14: Que se passe-t-il si personne ne valide?
+R: Le système continue de fonctionner. Les données restent disponibles.
+   Aucune obligation de validation (mais c'est recommandé!).
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔌 API & TESTEUR
+
+Q15: Comment envoyer une mesure manuellement?
+R: Via le formulaire "Tester l'API" du dashboard, ou via cURL:
+   curl -X POST http://localhost:8000/api/post \
+     -H "Content-Type: application/json" \
+     -d '{"temp": 5.5, "hum": 65.0}'
+
+Q16: Quels sont les champs obligatoires?
+R: Pour POST /api/post:
+    - temp: Float (température en °C)
+    - hum: Float (humidité en %)
+   Les deux sont optionnels (peuvent être null).
+
+Q17: Que signifie "max_temp" dans l'incident?
+R: La température maximale détectée pendant cet incident.
+   Utile pour diagnostiquer la gravité.
+
+Q18: Puis-je récupérer l'historique des incidents?
+R: Oui! Consultez /incident/archive/ ou l'API.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🕐 RAFRAÎCHISSEMENT & TEMPS RÉEL
+
+Q19: À quelle fréquence les données se rafraîchissent?
+R: Mesures (temp/hum): Toutes les 3 secondes
+   Statut incident: Toutes les 2 secondes
+
+Q20: Le dashboard met-il à jour automatiquement?
+R: Oui! Pas besoin de rafraîchir la page (F5).
+
+Q21: Quelle est la latence du système?
+R: Environ 2-5 secondes entre la mesure et l'affichage.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🔒 SÉCURITÉ & DROITS
+
+Q22: Qui peut voir les autres opérateurs?
+R: Tous les opérateurs connectés voient le même dashboard.
+   Il n'y a pas d'isolation par niveau.
+
+Q23: Puis-je voir mes actions précédentes?
+R: Oui, dans la boîte "Dernière validation":
+    - Date/heure de validation
+    - Statut de l'ACK
+    - Votre commentaire enregistré
+
+Q24: Mes données sont-elles sécurisées?
+R: Oui:
+    ✓ Base de données locale (SQLite par défaut)
+    ✓ Authentification Django standard
+    ✓ Protection CSRF
+    ✓ Sessions sécurisées
+   En production, utiliser HTTPS + PostgreSQL
+
+Q25: Qui peut modifier les droits d'un opérateur?
+R: Seulement un administrateur (superuser Django).
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🛠️ PROBLÈMES COURANTS
+
+Q26: Je vois "Module not found"
+R: Installez les dépendances:
+   pip install -r requirements.txt
+
+Q27: La page de login est blanche
+R: Vérifier:
+    python manage.py check
+   Les fichiers templates doivent être dans /templates/
+
+Q28: Incident ne se crée pas
+R: Vérifier que la température est BIEN entre 2 et 8°C (inclus).
+   Regarder les logs: python manage.py runserver
+
+Q29: Les opérateurs n'apparaissent pas
+R: Le compteur doit être ≥ 1 pour Op1, ≥ 4 pour Op2, ≥ 7 pour Op3.
+   Envoyer plusieurs mesures en plage critique.
+
+Q30: Je ne peux pas valider mon commentaire
+R: Cliquer le bouton "Valider Opérateur X" (pas Enter).
+   Vérifier que vous êtes connecté.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🌐 INTERFACES & NAVIGATION
+
+Q31: Où trouver les graphes?
+R: Depuis le dashboard opérateur:
+    - "📊 Graphe Température" → /graph_temp/
+    - "📊 Graphe Humidité" → /graph_hum/
+   Aussi disponibles sur le dashboard public.
+
+Q32: Comment voir l'archive des incidents?
+R: Via le lien /incident/archive/
+   Ou depuis l'admin Django.
+
+Q33: Puis-je exporter les données?
+R: Actuellement non, mais vous pouvez:
+    - Utiliser l'API pour extraire les JSON
+    - Accéder à la base de données directement
+    - Utiliser l'admin Django (export possible)
+
+Q34: Quelle est la plage d'URLs disponibles?
+R: Consultez:
+    / (dashboard public)
+    /login/ (connexion)
+    /logout/ (déconnexion)
+    /dashboard/ (dashboard opérateur - sécurisé)
+    /api/ (liste mesures)
+    /api/post (envoyer mesure)
+    /latest/ (dernière mesure)
+    /graph_temp/, /graph_hum/ (graphes)
+    /incident/status/ (API)
+    /incident/update/ (API)
+    /incident/archive/ (archive)
+    /incident/<id>/ (détails)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+⚙️ CONFIGURATION
+
+Q35: Comment changer le seuil de température?
+R: Éditer DHT/api.py:
+    MIN_OK = 2    # Limite basse
+    MAX_OK = 8    # Limite haute
+   Puis relancer le serveur.
+
+Q36: Comment modifier les seuils d'escalade?
+R: Éditer templates/dashboard_operator.html (JavaScript):
+    Ligne avec renderOperatorPanels()
+   Ou modifier DHT/api.py si vous voulez une logique serveur.
+
+Q37: Comment changer la fréquence de rafraîchissement?
+R: Dans templates/dashboard_operator.html:
+    setInterval(loadLatest, 3000);         // Mesures (3 sec)
+    setInterval(loadIncidentStatus, 2000); // Incidents (2 sec)
+
+Q38: Puis-je modifier les couleurs?
+R: Oui, dans le CSS des templates.
+    Couleurs principales:
+    - #667eea (bleu)
+    - #764ba2 (violet)
+    - #10b981 (vert)
+    - #ef4444 (rouge)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📈 PERFORMANCE
+
+Q39: Combien de mesures peuvent être stockées?
+R: SQLite: Illimité (en pratique, quelques GB)
+   Pour production: Utiliser PostgreSQL
+
+Q40: Y a-t-il de la mise en cache?
+R: Non, tout est frais (live).
+   Possible à ajouter si nécessaire.
+
+Q41: Quel est l'impact sur la bande passante?
+R: Minimal. Dashboard: 1 requête toutes les 2-3 secondes (~1KB).
+   API: Dépend du volume de mesures entrantes.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 DÉPLOIEMENT
+
+Q42: Comment déployer en production?
+R: Checklist:
+    [ ] Changer SECRET_KEY
+    [ ] DEBUG = False
+    [ ] ALLOWED_HOSTS configuré
+    [ ] HTTPS activé
+    [ ] PostgreSQL ou autre BD
+    [ ] Gunicorn/Uwsgi installé
+    [ ] Static files collected
+    [ ] Logs configurés
+    [ ] Backups automatiques
+
+Q43: Quel serveur Web utiliser?
+R: Production:
+    - Gunicorn (recommandé)
+    - Uwsgi
+    - uWSGI
+   Frontal: Nginx ou Apache
+
+Q44: Comment sauvegarder les données?
+R: Base de données SQLite:
+    cp db.sqlite3 backup_$(date).sqlite3
+   Ou exportez via l'API.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+❓ AUTRES QUESTIONS?
+
+Consultez:
+  📖 README.md → Guide complet
+  📋 GUIDE_OPERATEURS.md → Documentation opérateurs
+  📄 IMPLEMENTATION_SUMMARY.txt → Détails techniques
+  🧪 test_api.py → Tests API
+  🔌 EXAMPLES_CURL.sh → Exemples de commandes
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Dernière mise à jour: 31/12/2025
+Développé avec Django 5.2 + DRF

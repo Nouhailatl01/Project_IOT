@@ -1,0 +1,60 @@
+📧 CONFIGURATION POUR OUTLOOK/OFFICE365
+========================================
+
+Si vous utilisez Outlook au lieu de Gmail:
+
+ÉTAPE 1: Obtenir vos identifiants
+──────────────────────────────────
+
+1. Allez sur https://account.microsoft.com
+2. Vérifiez votre email: exemple@outlook.com
+3. Utilisez votre mot de passe Outlook
+4. (Pas besoin de mot de passe d'application!)
+
+ÉTAPE 2: Modifier settings.py
+─────────────────────────────
+
+Ouvrez: projet/settings.py
+
+Cherchez le bloc:
+
+    # ===== CONFIGURATION EMAIL =====
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'your-email@gmail.com'
+    EMAIL_HOST_PASSWORD = 'your-app-password'
+    DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+
+REMPLACEZ par:
+
+    # ===== CONFIGURATION EMAIL =====
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.office365.com'              # ← CHANGÉ
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'votre-email@outlook.com'   # ← REMPLACER
+    EMAIL_HOST_PASSWORD = 'votre-mot-de-passe'   # ← REMPLACER
+    DEFAULT_FROM_EMAIL = 'votre-email@outlook.com' # ← REMPLACER
+
+ÉTAPE 3: Tester
+───────────────
+
+$ python manage.py shell < test_email_config.py
+
+Vous devez voir:
+    ✅ Email envoyé avec succès...
+
+ÉTAPE 4: Redémarrer Django
+──────────────────────────
+
+$ python manage.py runserver
+
+========================================
+✨ C'EST TOUT!
+========================================
+
+Vos emails d'alerte fonctionneront maintenant via Outlook.
+
+Si problème: EMAIL_SETUP_GUIDE.md

@@ -1,0 +1,69 @@
+🎯 START HERE - SYSTÈME D'ALERTE EMAIL
+========================================
+
+Vous venez d'ajouter des alertes par email à votre système!
+
+📧 Emails seront envoyés à: nouhaila.touil.23@ump.ac.ma
+
+✅ 3 ÉTAPES POUR COMMENCER:
+
+1️⃣  LIRE (2 min)
+   Ouvrez: QUICK_EMAIL_SETUP.txt
+
+2️⃣  CONFIGURER (3 min)
+   Suivez les 4 étapes de QUICK_EMAIL_SETUP.txt
+   Modifiez projet/settings.py
+
+3️⃣  TESTER (1 min)
+   $ python manage.py shell < test_email_config.py
+   Attendu: ✅ Email envoyé avec succès...
+
+========================================
+
+📚 FICHIERS À LIRE (par ordre):
+
+1. QUICK_EMAIL_SETUP.txt ⭐ COMMENCER PAR CELUI-CI!
+   (Configuration rapide en 4 étapes - 5 min)
+
+2. EMAIL_SETUP_GUIDE.md (Guide complet - 15 min)
+   
+3. EMAIL_CHECKLIST.txt (Vérifications - 10 min)
+
+========================================
+
+🛠️ OUTILS:
+
+configure_email.py
+  $ python configure_email.py
+  (Configuration interactive - recommandée!)
+
+test_email_config.py
+  $ python manage.py shell < test_email_config.py
+  (Test SMTP - valide votre configuration)
+
+========================================
+
+📧 EMAILS REÇUS POUR:
+  ✓ Chaque nouvel incident
+  ✓ Chaque escalade
+  
+NON reçus pour:
+  ✗ Incident résolu
+  ✗ Incident fermé (température normale)
+
+========================================
+
+❓ QUESTIONS?
+
+Configuration rapide → QUICK_EMAIL_SETUP.txt
+Help complet → EMAIL_SETUP_GUIDE.md
+Pour Outlook → OUTLOOK_EMAIL_CONFIG.txt
+Checklist → EMAIL_CHECKLIST.txt
+
+========================================
+
+🚀 C'EST PRÊT!
+
+Commencez par: QUICK_EMAIL_SETUP.txt
+
+Bon courage! 🎉

@@ -1,0 +1,96 @@
+🚀 CONFIGURATION RAPIDE - EMAILS D'ALERTE
+========================================
+
+⏱️ Temps estimé: 5-10 minutes
+
+ÉTAPE 1: Obtenir les identifiants
+─────────────────────────────────
+
+Pour GMAIL (recommandé):
+1. Allez sur https://myaccount.google.com
+2. Cliquez "Sécurité"
+3. Activez l'authentification 2FA
+4. Allez à "Mots de passe d'application"
+5. Sélectionnez "Mail" et "Windows"
+6. Cliquez "Générer"
+7. Copiez le mot de passe (ex: abcd efgh ijkl mnop)
+
+Pour OUTLOOK/HOTMAIL:
+1. Allez sur https://account.microsoft.com
+2. Utilisez directement votre email et mot de passe
+
+ÉTAPE 2: Configurer Django
+───────────────────────────
+
+Ouvrez: projet/settings.py
+
+Cherchez le bloc (vers la fin):
+
+    # ===== CONFIGURATION EMAIL =====
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = 'your-email@gmail.com'
+    EMAIL_HOST_PASSWORD = 'your-app-password'
+    DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+    
+    ALERT_EMAIL = 'nouhaila.touil.23@ump.ac.ma'
+
+REMPLACEZ ces 3 lignes UNIQUEMENT:
+
+    EMAIL_HOST_USER = 'your-email@gmail.com'
+    ↓
+    EMAIL_HOST_USER = 'votre-email@gmail.com'
+
+
+    EMAIL_HOST_PASSWORD = 'your-app-password'
+    ↓
+    EMAIL_HOST_PASSWORD = 'abcd efgh ijkl mnop'  (votre mot de passe d'application)
+
+
+    DEFAULT_FROM_EMAIL = 'your-email@gmail.com'
+    ↓
+    DEFAULT_FROM_EMAIL = 'votre-email@gmail.com'
+
+Puis sauvegardez le fichier (Ctrl+S).
+
+ÉTAPE 3: Tester
+───────────────
+
+Ouvrez un terminal et exécutez:
+
+    python manage.py shell < test_email_config.py
+
+Vous devez voir:
+    ✅ Email envoyé avec succès à nouhaila.touil.23@ump.ac.ma!
+
+Si erreur "SMTPAuthenticationError":
+  → Vérifiez que vous utilisez le bon mot de passe d'application
+  → Pour Gmail: pas votre mot de passe Gmail, mais celui généré!
+
+Si erreur "Email SMTP non configuré":
+  → Vérifiez que EMAIL_HOST_USER n'est pas vide
+
+ÉTAPE 4: C'est tout!
+────────────────────
+
+Redémarrez Django:
+    python manage.py runserver
+
+Créez un incident (température < 2°C ou > 8°C):
+    curl -X POST http://localhost:8000/api/post \
+      -H "Content-Type: application/json" \
+      -d '{"temp": 1.0, "hum": 50}'
+
+Vérifiez votre email: nouhaila.touil.23@ump.ac.ma
+Vous devez recevoir une alerte!
+
+========================================
+✨ C'EST TOUT! Vous avez réussi!
+========================================
+
+Chaque nouvel incident générera un email.
+Chaque escalade générera un email.
+
+Pour l'aide complète: EMAIL_SETUP_GUIDE.md

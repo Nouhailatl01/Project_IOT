@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Archive des Incidents</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        tbody tr {
+            transition: background-color 0.3s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-closed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-lost {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-btn {
+            padding: 8px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .action-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .table-wrapper {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>📋 Archive des Incidents</h1>
+            </div>
+            <a href="/dashboard/" class="back-btn">← Retour</a>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="value" id="totalIncidents">0</div>
+                <div class="label">Total Incidents</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="totalAlerts">0</div>
+                <div class="label">Total Alertes</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="maxTemp">--</div>
+                <div class="label">Temp. Max</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="avgDuration">--</div>
+                <div class="label">Durée Moy</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="table-wrapper">
+                <table id="incidentTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                            <th>Durée</th>
+                            <th>⚠️ Alertes</th>
+                            <th>🌡️ Temp Max</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidentsBody">
+                    </tbody>
+                </table>
+            </div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>Aucun incident enregistré</h3>
+                <p>Les incidents apparaîtront ici</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            return date.toLocaleString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function formatDuration(start, end) {
+            if (!start || !end) return '--';
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const diff = endDate - startDate;
+            
+            const totalSeconds = Math.floor(diff / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m`;
+            } else {
+                return '< 1m';
+            }
+        }
+        
+        function getStatusBadge(incident) {
+            if (incident.is_open) {
+                return '<span class="badge" style="background: #fca5a5; color: #7f1d1d;">🔴 OUVERT</span>';
+            } else if (incident.is_product_lost) {
+                return '<span class="badge badge-lost">🚨 Produit Perdu</span>';
+            } else {
+                return '<span class="badge badge-closed">✓ Fermé</span>';
+            }
+        }
+        
+        function loadIncidents() {
+            const dataElement = document.getElementById('incidentsData');
+            if (!dataElement) {
+                console.error('Element incidentsData non trouvé');
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            
+            let incidents = [];
+            try {
+                incidents = JSON.parse(dataElement.textContent);
+                console.log('Incidents chargés:', incidents.length, incidents);
+            } catch(e) {
+                console.error('Erreur parsing JSON:', e);
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            
+            const table = document.getElementById('incidentsBody');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (!incidents || incidents.length === 0) {
+                console.log('Aucun incident');
+                emptyState.style.display = 'block';
+                table.innerHTML = '';
+                updateStats([]);
+                return;
+            }
+            
+            console.log('Affichage de', incidents.length, 'incidents');
+            emptyState.style.display = 'none';
+            table.innerHTML = incidents.map(incident => `
+                <tr>
+                    <td><strong>#${incident.id}</strong></td>
+                    <td>${formatDateTime(incident.start_at)}</td>
+                    <td>${formatDateTime(incident.end_at)}</td>
+                    <td>${formatDuration(incident.start_at, incident.end_at)}</td>
+                    <td><strong>${incident.counter}</strong></td>
+                    <td><strong>${incident.max_temp.toFixed(1)}°C</strong></td>
+                    <td>${getStatusBadge(incident)}</td>
+                    <td>
+                        <button class="action-btn" onclick="viewDetail(${incident.id})">Détails</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            updateStats(incidents);
+        }
+        
+        function updateStats(incidents) {
+            if (!incidents || incidents.length === 0) {
+                document.getElementById('totalIncidents').textContent = '0';
+                document.getElementById('totalAlerts').textContent = '0';
+                document.getElementById('maxTemp').textContent = '--';
+                document.getElementById('avgDuration').textContent = '--';
+                return;
+            }
+            
+            const totalAlerts = incidents.reduce((sum, i) => sum + i.counter, 0);
+            const maxTemp = Math.max(...incidents.map(i => i.max_temp));
+            
+            let totalDuration = 0;
+            let validCount = 0;
+            incidents.forEach(i => {
+                if (i.start_at && i.end_at) {
+                    totalDuration += new Date(i.end_at) - new Date(i.start_at);
+                    validCount++;
+                }
+            });
+            
+            let avgDurationText = '--';
+            if (validCount > 0) {
+                const avgSeconds = Math.floor(totalDuration / validCount / 1000);
+                const avgHours = Math.floor(avgSeconds / 3600);
+                const avgMinutes = Math.floor((avgSeconds % 3600) / 60);
+                
+                if (avgHours > 0) {
+                    avgDurationText = `${avgHours}h ${avgMinutes}m`;
+                } else {
+                    avgDurationText = `${avgMinutes}m`;
+                }
+            }
+            
+            document.getElementById('totalIncidents').textContent = incidents.length;
+            document.getElementById('totalAlerts').textContent = totalAlerts;
+            document.getElementById('maxTemp').textContent = maxTemp.toFixed(1) + '°C';
+            document.getElementById('avgDuration').textContent = avgDurationText;
+        }
+        
+        function viewDetail(id) {
+            window.location.href = `/incident/${id}/`;
+        }
+        
+        // Charger les incidents au chargement
+        document.addEventListener('DOMContentLoaded', loadIncidents);
+    </script>
+    
+    <script type="application/json" id="incidentsData">
+        {{ incidents_data|safe }}
+    </script>
+</body>
+</html>

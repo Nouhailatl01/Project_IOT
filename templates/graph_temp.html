@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphe Température</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            height: 100%;
+            width: 100%;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        body {
+            padding: 12px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 10px;
+        }
+        
+        .header {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: #d97706;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #b45309;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .filters-card {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+        
+        .filter-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+        
+        .filter-group input,
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #d97706;
+            background: #fffbf0;
+        }
+        
+        .quick-filters {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .quick-filters button {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.2s;
+        }
+        
+        .quick-filters button:hover {
+            background: #f3f4f6;
+            border-color: #d97706;
+            color: #d97706;
+        }
+        
+        .graph-card {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        
+        .graph-card h2 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .canvas-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #tempChart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .stats-inline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+            flex-shrink: 0;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 8px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d97706;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌡️ Température</h1>
+            <div class="header-actions">
+                <a href="/dashboard/" class="btn btn-secondary">← Retour</a>
+                <button class="btn btn-primary" onclick="exportCSV()">📥 CSV</button>
+            </div>
+        </div>
+        
+        <div class="filters-card">
+            <div class="filter-title">Filtres</div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="dateStart">De</label>
+                    <input type="datetime-local" id="dateStart">
+                </div>
+                <div class="filter-group">
+                    <label for="dateEnd">À</label>
+                    <input type="datetime-local" id="dateEnd">
+                </div>
+                <div class="filter-group">
+                    <label for="period">Période</label>
+                    <select id="period" onchange="setPeriod()">
+                        <option value="24h">24h</option>
+                        <option value="7d">7j</option>
+                        <option value="30d">30j</option>
+                        <option value="all">Tout</option>
+                    </select>
+                </div>
+                <div class="quick-filters">
+                    <button class="btn btn-primary" onclick="loadGraphData()">↻ Appliquer</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="graph-card">
+            <h2>Courbe Température</h2>
+            <div class="canvas-wrapper">
+                <canvas id="tempChart"></canvas>
+            </div>
+            <div class="stats-inline">
+                <div class="stat-card">
+                    <div class="stat-label">Actuelle</div>
+                    <div class="stat-value" id="tempCurrent">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Maximum</div>
+                    <div class="stat-value" id="tempMax">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Minimum</div>
+                    <div class="stat-value" id="tempMin">--</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Moyenne</div>
+                    <div class="stat-value" id="tempAvg">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let chart = null;
+        let allData = [];
+        
+        async function loadGraphData() {
+            try {
+                const startDate = document.getElementById('dateStart').value;
+                const endDate = document.getElementById('dateEnd').value;
+                
+                let url = '/api/';
+                const params = new URLSearchParams();
+                
+                if (startDate) params.append('start_date', startDate);
+                if (endDate) params.append('end_date', endDate);
+                
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                
+                const response = await fetch(url);
+                allData = await response.json();
+                
+                if (!Array.isArray(allData)) {
+                    allData = [];
+                }
+                
+                updateChart();
+                updateStats();
+            } catch (error) {
+                console.error('Erreur:', error);
+                allData = [];
+            }
+        }
+        
+        function updateChart() {
+            const labels = allData.map(item => {
+                const date = new Date(item.dt);
+                return date.toLocaleString('fr-FR', { 
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            });
+            
+            const temps = allData.map(item => parseFloat(item.temp) || 0);
+            
+            if (chart) {
+                chart.destroy();
+            }
+            
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Température °C',
+                        data: temps,
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#d97706',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { font: { size: 12 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 30,
+                            ticks: { stepSize: 5, font: { size: 11 } }
+                        },
+                        x: {
+                            ticks: { 
+                                font: { size: 10 },
+                                maxRotation: 45,
+                                minRotation: 0,
+                                maxTicksLimit: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateStats() {
+            if (allData.length === 0) {
+                document.getElementById('tempCurrent').textContent = '--';
+                document.getElementById('tempMax').textContent = '--';
+                document.getElementById('tempMin').textContent = '--';
+                document.getElementById('tempAvg').textContent = '--';
+                return;
+            }
+            
+            const temps = allData.map(item => parseFloat(item.temp) || 0).filter(t => !isNaN(t));
+            
+            const current = temps[temps.length - 1] || 0;
+            const max = Math.max(...temps);
+            const min = Math.min(...temps);
+            const avg = (temps.reduce((a, b) => a + b, 0) / temps.length) || 0;
+            
+            document.getElementById('tempCurrent').textContent = current.toFixed(1) + '°C';
+            document.getElementById('tempMax').textContent = max.toFixed(1) + '°C';
+            document.getElementById('tempMin').textContent = min.toFixed(1) + '°C';
+            document.getElementById('tempAvg').textContent = avg.toFixed(1) + '°C';
+        }
+        
+        function setPeriod() {
+            const period = document.getElementById('period').value;
+            const now = new Date();
+            const start = new Date(now);
+            
+            switch(period) {
+                case '24h':
+                    start.setTime(now.getTime() - 24 * 60 * 60 * 1000);
+                    break;
+                case '7d':
+                    start.setTime(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '30d':
+                    start.setTime(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'all':
+                default:
+                    document.getElementById('dateStart').value = '';
+                    document.getElementById('dateEnd').value = '';
+                    loadGraphData();
+                    return;
+            }
+            
+            document.getElementById('dateStart').value = start.toISOString().slice(0, 16);
+            document.getElementById('dateEnd').value = now.toISOString().slice(0, 16);
+            loadGraphData();
+        }
+        
+        function exportCSV() {
+            if (allData.length === 0) {
+                alert('Aucune donnée à exporter');
+                return;
+            }
+            
+            let csv = 'Date/Heure,Température (°C),Humidité (%)\n';
+            allData.forEach(item => {
+                const date = new Date(item.dt).toLocaleString('fr-FR');
+                const temp = item.temp || '';
+                const hum = item.hum || '';
+                csv += `"${date}",${temp},${hum}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `temperature_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            
+            document.getElementById('dateStart').value = start.toISOString().slice(0, 16);
+            document.getElementById('dateEnd').value = now.toISOString().slice(0, 16);
+            document.getElementById('period').value = '24h';
+            
+            loadGraphData();
+        });
+    </script>
+</body>
+</html>
