@@ -27,6 +27,17 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['Nouhailatl01.pythonanywhere.com', 'localhost', '127.0.0.1']
 
+# CSRF Configuration for HTTPS
+CSRF_TRUSTED_ORIGINS = ['https://Nouhailatl01.pythonanywhere.com']
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False  # Must be False for CSRF token in forms
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_SECURITY_POLICY = {
+    "default-src": ("'self'",),
+}
+
 
 # Application definition
 
