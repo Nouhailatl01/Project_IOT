@@ -51,6 +51,7 @@ Anomaly Detection: Demonstrate system identification and response to critical de
 For questions or contributions, feel free to contact:
 
 **Email:** nouhaila.touil.work@gmail.com
+**LinkedIn:** https://www.linkedin.com/in/nouhaila-touil/
 
 ---
 
