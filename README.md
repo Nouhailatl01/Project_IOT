@@ -22,41 +22,9 @@ Backend: Django (Python), REST API, PostgreSQL
 Frontend: React, HTML, CSS, JavaScript, Chart.js
 Cloud Services: PythonAnywhere (Hosting & Deployment)
 
- Project Structure
-
-📁 Smart-Cold-Chain/
- ├── 📂 DHT/                 # Main Django app
- ├── 📂 projet/              # Django configuration
- ├── 📂 templates/           # HTML & web interface
- ├── 📂 static/              # CSS, JavaScript, images
- ├── 📂 hardware/            # ESP8266 firmware & sensors
- ├── 📂 docs/                # Documentation
- ├── 📂 scripts/             # Utility scripts
- ├── 📂 tests/               # Test suite
- ├── 📜 README.md            # Project documentation
-
 👥 Team Members
 
 Nouhaila Touil
-
-👥 Team Responsibilities
-
-Role	Tasks
-Sensor Setup & MQTT	ESP8266 configuration, data transmission
-Backend Development	Django API, Escalation Logic, Email Alerts
-Database Management	PostgreSQL Schema, Data Management
-Frontend Development	React Dashboard, Real-time Updates, UI/UX Design
-Testing & Debugging	Unit Tests, Integration Tests, System Validation
-DevOps & Deployment	PythonAnywhere Setup, Production Configuration
-
-🚀 How to Set Up the Project
-
-Hardware Setup: Connect ESP8266 with DHT11 sensor and power supply.
-Backend Setup: Install dependencies with `pip install -r requirements.txt` and run migrations.
-Database Configuration: Initialize database with `python manage.py migrate`.
-Web Dashboard: Start development server with `python manage.py runserver`.
-MQTT Configuration: Set up MQTT broker and configure connection in Django settings.
-Production Deployment: Deploy on PythonAnywhere with environment variables configured.
 
 📌 Future Enhancements
 
@@ -82,9 +50,7 @@ Anomaly Detection: Demonstrate system identification and response to critical de
 
 For questions or contributions, feel free to contact:
 
-**Author:** Nouhaila Touil
-**Email:** nouhaila.touil.23@ump.ac.ma
-**University:** Université Mohammed Premier (UMP)
+**Email:** nouhaila.touil.work@gmail.com
 
 ---
 
