@@ -24,7 +24,8 @@ Cloud Services: PythonAnywhere (Hosting & Deployment)
 
 👥 Team Members
 
-Nouhaila Touil
+✅ Nouhaila Touil  
+*Étudiante ingénieure en Génie des Systèmes Électroniques, Informatiques et Réseaux*
 
 📌 Future Enhancements
 
