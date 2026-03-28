@@ -415,7 +415,7 @@ def handle_new_reading(temperature, humidity, capteur):
 *École Nationale des Sciences Appliquées d'Oujda — ENSA Oujda*
 
 [![GitHub](https://img.shields.io/badge/GitHub-your--username-181717?style=for-the-badge&logo=github)](https://github.com/your-username)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/your-profile)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/nouhaila-touil-b381ab320/)
 
 *Supervised by: **Pr. EL MOUSSATI ALI***
 *Soutenu le : 13 janvier 2026*
